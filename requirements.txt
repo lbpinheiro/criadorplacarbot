@@ -1,0 +1,3 @@
+pip install telebot
+pip install Pillow
+pip install python-dotenv

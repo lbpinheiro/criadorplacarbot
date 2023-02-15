@@ -1,0 +1,14 @@
+venv/
+
+.env
+
+criadorplacartest.py
+image.py
+telegrambot.service
+telegrambot-start.sh
+validate-test.py
+dpi-estimate.py
+cour.ttf
+comandos-uteis
+
+log/
