@@ -17,7 +17,7 @@ load_dotenv()
 
 
 # constants
-VERSION = "0.2"
+VERSION = "0.3"
 LOG_FOLDER = "log"
 LOG_FILE = "criadorplacarbot.log"
 # LOG_FILE_MAX_SIZE = 10000000 # 10 mb # TODO with inotify
@@ -387,4 +387,4 @@ def process_inputs(message):
 
 
 logger.info("running...")
-bot.polling()
+bot.infinity_polling()
