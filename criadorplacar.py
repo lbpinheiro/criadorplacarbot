@@ -399,7 +399,7 @@ def create_image_torneio(chat_id):
     img = Image.open("torneio-simples.jpg")
     draw = ImageDraw.Draw(img)
 
-    text = user_info[chat_id]["torneio"].title()
+    text = user_info[chat_id]["torneio"].upper()
     draw_text(torneioSimplesDimensions["TORNEIO"], text, draw)
 
     text = user_info[chat_id]["player1"].title()
