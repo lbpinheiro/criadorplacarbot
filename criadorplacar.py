@@ -17,7 +17,7 @@ load_dotenv()
 # import inotify.adapters
 
 # constants
-VERSION = "0.5"
+VERSION = "0.6"
 LOG_FOLDER = "log"
 LOG_FILE = "criadorplacarbot.log"
 # LOG_FILE_MAX_SIZE = 10000000 # 10 mb # TODO with inotify
@@ -45,7 +45,8 @@ WELCOME = (f"Seja bem-vindo ao CriadorPlacarBot! Este bot tem como "
            f"atual, use o comando /cancelar.\n\n"
            f"Para ver esta mensagem de ajuda novamente, basta usar o comando "
            f"/help.\n\n"
-           f"Versão {VERSION}")
+           f"Versão {VERSION}\n"
+           f"Criado por Lucas Pinheiro\n")
 
 
 # boxes
@@ -93,6 +94,21 @@ duplasDimensions = {
     "LOCAL": FieldDimensions(355, 50, 441, 650)  # 196
 }
 
+torneioSimplesDimensions = {
+    "TORNEIO": FieldDimensions(67, 66, 490, 51),
+    "TENISTA_1": FieldDimensions(385, 45, 438, 124),
+    "TENISTA_2": FieldDimensions(385, 45, 438, 206),
+    "CAT_1": FieldDimensions(53, 53, 685, 130),
+    "CAT_2": FieldDimensions(53, 53, 685, 203),
+    "PLACAR_SET1_TEN1": FieldDimensions(98, 95, 389, 395),
+    "PLACAR_SET1_TEN2": FieldDimensions(98, 95, 392, 548),
+    "PLACAR_SET2_TEN1": FieldDimensions(98, 95, 584, 395),
+    "PLACAR_SET2_TEN2": FieldDimensions(98, 95, 584, 548),
+    "TIEBREAK_1": FieldDimensions(98, 95, 783, 396),
+    "TIEBREAK_2": FieldDimensions(98, 95, 783, 549),
+    "LOCAL": FieldDimensions(420, 48, 474, 650)
+}
+
 # set up logging
 if not os.path.exists(LOG_FOLDER):
     os.makedirs(LOG_FOLDER)
@@ -117,7 +133,7 @@ state = {}
 
 def validate_tipo(text):
     s = text.upper()
-    return s in {"SIMPLES", "DUPLAS"}
+    return s in {"SIMPLES", "DUPLAS", "TORNEIO SIMPLES"}
 
 
 def validate_name(text):
@@ -143,6 +159,43 @@ def validate_score(text):
     else:
         pattern = r'^76\(\d+\)$'
         return re.match(pattern, text) is not None
+
+def validate_score_torneio(text):
+        sets = text.strip().split()
+        print(sets)
+        sets_size = len(sets)
+        print(sets_size)
+        if sets_size < 2 or sets_size > 3:
+            print("returning 0")
+            return False
+        
+        tenista1_sets_vencidos = 0
+        for i in range(2):
+            print("i=" + str(i))
+            if sets[i] in {"60", "61", "62", "63", "64", "75", "76"}:
+                tenista1_sets_vencidos += 1
+            elif sets[i] not in {"06", "16", "26", "36", "46", "57", "67"}:
+                print("returning 1")
+                return False
+        print(tenista1_sets_vencidos)
+        if tenista1_sets_vencidos == 2:
+            print("returning 2")
+            return sets_size == 2
+        elif tenista1_sets_vencidos == 0:
+            print("returning 3")
+            return False
+        elif tenista1_sets_vencidos == 1 and sets_size != 3:
+            print("returning 4")
+            return False
+        
+        
+        # terceiro set é um tiebreak, número de pontos do tenista perdedor
+        return sets[2].isdigit()
+
+        #index_half = len(sets[2]) // 2
+        #tie_tenista1 = int(sets[2][:index_half])
+        #tie_tenista2 = int(sets[2][index_half:])
+        
 
 
 # @bot.message_handler(commands=['help', 'start'])
@@ -342,6 +395,69 @@ def create_image_duplas(chat_id):
          f"user_info={user_info[chat_id]}")
     )
 
+def create_image_torneio(chat_id):
+    img = Image.open("torneio-simples.jpg")
+    draw = ImageDraw.Draw(img)
+
+    text = user_info[chat_id]["torneio"].title()
+    draw_text(torneioSimplesDimensions["TORNEIO"], text, draw)
+
+    text = user_info[chat_id]["player1"].title()
+    draw_text(torneioSimplesDimensions["TENISTA_1"], text, draw)
+
+    text = user_info[chat_id]["player2"].title()
+    draw_text(torneioSimplesDimensions["TENISTA_2"], text, draw)
+
+    text = user_info[chat_id]["cat1"].upper()
+    draw_text(torneioSimplesDimensions["CAT_1"], text, draw)
+
+    text = user_info[chat_id]["cat2"].upper()
+    draw_text(torneioSimplesDimensions["CAT_2"], text, draw)
+
+    score = user_info[chat_id]["score"].strip().split()
+
+    text = score[0][:1]
+    draw_text(torneioSimplesDimensions["PLACAR_SET1_TEN1"], text, draw)
+
+    text = score[0][1:2]
+    draw_text(torneioSimplesDimensions["PLACAR_SET1_TEN2"], text, draw)
+
+    text = score[1][:1]
+    draw_text(torneioSimplesDimensions["PLACAR_SET2_TEN1"], text, draw)
+
+    text = score[1][1:2]
+    draw_text(torneioSimplesDimensions["PLACAR_SET2_TEN2"], text, draw)
+
+
+    if len(score) > 2:
+        tie2 = int(score[2])
+        tie1 = 7
+
+        if tie2 > 5:
+            tie1 = tie2 + 2
+
+        # tiebreak 1
+        text = str(tie1)
+        draw_text(torneioSimplesDimensions["TIEBREAK_1"], text, draw)
+
+        # tiebreak 2
+        text = str(tie2)
+        draw_text(torneioSimplesDimensions["TIEBREAK_2"], text, draw)
+
+    # local
+    text = user_info[chat_id]["local"].upper()
+    draw_text(torneioSimplesDimensions["LOCAL"], text, draw)
+
+    # Save the image
+    img_byte_arr = io.BytesIO()
+    img.save(img_byte_arr, format='PNG')
+    img_byte_arr.seek(0)
+    bot.send_photo(chat_id=chat_id, photo=img_byte_arr)
+
+    logger.info(
+        (f"photo sent, chat_id={chat_id}, "
+         f"user_info={user_info[chat_id]}")
+    )
 
 """ markup = telebot.service_utils.quick_markup(
     {'text': 'Press me', 'callback_data': 'press'},
@@ -365,12 +481,13 @@ catMarkup.add(catItem1, catItem2, catItem3, catItem4, catItem5)
 tipoMarkup = types.ReplyKeyboardMarkup(row_width=1)
 tipoItem1 = types.KeyboardButton('Simples')
 tipoItem2 = types.KeyboardButton('Duplas')
-tipoMarkup.add(tipoItem1, tipoItem2)
+tipoItem3 = types.KeyboardButton('Torneio Simples')
+tipoMarkup.add(tipoItem1, tipoItem2, tipoItem3)
 
 defaultMarkup = types.ReplyKeyboardRemove(selective=False)
 
 initialHandler = [
-    "Selecione a categoria do jogo (simples ou duplas)",
+    "Selecione a categoria do jogo (simples, duplas ou torneio simples)",
     TIPO_INVALIDO,
     validate_tipo,
     "tipo",
@@ -504,6 +621,61 @@ stateHandlerDuplas = [
     )
 ]
 
+stateHandlerTorneio = [
+    (
+        "Insira a categoria do torneio",
+        "Categoria Inválida. As categorias válidas são C, B, A, S ou SS",
+        validate_cat,
+        "torneio",
+        catMarkup
+    ),
+    (
+        "Insira o nome do jogador vencedor",
+        JOGADOR_INVALIDO,
+        validate_name,
+        "player1",
+        defaultMarkup
+    ),
+    (
+        "Insira a categoria do jogador vencedor (C, B, A, S ou SS)",
+        "Categoria Inválida. As categorias válidas são C, B, A, S ou SS",
+        validate_cat,
+        "cat1",
+        catMarkup
+    ),
+    (
+        "Insira o nome do jogador derrotado",
+        JOGADOR_INVALIDO,
+        validate_name,
+        "player2",
+        defaultMarkup
+    ),
+    (
+        "Insira a categoria do jogador derrotado (C, B, A, S ou SS)",
+        "Categoria Inválida. As categorias válidas são C, B, A, S ou SS",
+        validate_cat,
+        "cat2",
+        catMarkup
+    ),
+    (
+        "Insira o placar do jogo, sempre em referência ao vencedor e apenas "
+        "números, sets divididos por espaço. Se houver terceiro set (tiebreak de "
+        "7 pontos) insira apenas a pontuação do jogador derrotado. Exemplos: "
+        "'60 61', '46 75 3', '26 63 4', '76 76', '75 61', '64 67 2'",
+        "Placar inválido",
+        validate_score_torneio,
+        "score",
+        defaultMarkup
+    ),
+    (
+        "Insira o nome do local onde ocorreu o jogo",
+        "Local inválido",
+        validate_local,
+        "local",
+        defaultMarkup
+    )
+]
+
 
 @bot.message_handler(commands=['placar'])
 def placar(message):
@@ -588,7 +760,8 @@ def process_inputs(message):
     state_handler = stateHandler
     if "tipo" in user_info[chat_id] and user_info[chat_id]["tipo"].upper() == "DUPLAS":
         state_handler = stateHandlerDuplas
-
+    elif "tipo" in user_info[chat_id] and user_info[chat_id]["tipo"].upper() == "TORNEIO SIMPLES":
+        state_handler = stateHandlerTorneio
     """if currentState == len(state_handler):
         bot.send_message(
             chat_id=chat_id,
@@ -604,8 +777,11 @@ def process_inputs(message):
         user_info[chat_id][state_handler[currentState][3]] = text
         # print(user_info[chat_id])
 
-        if "tipo" in user_info[chat_id] and user_info[chat_id]["tipo"].upper() == "DUPLAS":
-            state_handler = stateHandlerDuplas
+        if "tipo" in user_info[chat_id]:
+            if user_info[chat_id]["tipo"].upper() == "DUPLAS":
+                state_handler = stateHandlerDuplas
+            elif user_info[chat_id]["tipo"].upper() == "TORNEIO SIMPLES":
+                state_handler = stateHandlerTorneio
         else:
             state_handler = stateHandler
 
@@ -624,6 +800,8 @@ def process_inputs(message):
             )
             if user_info[chat_id]["tipo"].upper() == "DUPLAS":
                 create_image_duplas(chat_id)
+            elif user_info[chat_id]["tipo"].upper() == "TORNEIO SIMPLES":
+                create_image_torneio(chat_id)
             else:
                 create_image(chat_id)
 

@@ -13,3 +13,10 @@ comandos-uteis
 nohup.out
 
 log/
+
+bin/
+include/
+lib/
+lib64/
+__pycache__/
+pyvenv.cfg
