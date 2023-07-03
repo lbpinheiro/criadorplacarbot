@@ -17,7 +17,7 @@ load_dotenv()
 # import inotify.adapters
 
 # constants
-VERSION = "0.6"
+VERSION = "0.7"
 LOG_FOLDER = "log"
 LOG_FILE = "criadorplacarbot.log"
 # LOG_FILE_MAX_SIZE = 10000000 # 10 mb # TODO with inotify
@@ -26,10 +26,17 @@ MAX_MESSAGES_PER_SECOND = 4
 FONT_FILE_NAME = "LiberationSans-Regular.ttf"
 NAME_MIN = 3
 NAME_MAX = 80
+STATE_FINAL = 99
+WAITING_PHOTO_STATE = 100
 OFFSET = int(os.environ.get("OFFSET"))  # depende da fonte
 
-
-TIPO_INVALIDO = "O tipo de jogo deve ser 'simples' ou 'duplas'"
+AGUARDANDO_FOTO = "aguardando a foto da partida"
+GERANDO_IMAGEM = "criando a imagem, pode demorar alguns segundos ..."
+TIPO_INVALIDO = "O tipo de jogo deve ser 'simples', 'duplas' ou 'torneio simples'"
+DESEJA_ENVIAR_FOTO = ("deseja enviar a foto da partida? (sim / não)\n"
+                      "A imagem com o placar será juntada com a foto enviada"
+                      "(melhor visualiado com foto enviada no modo RETRATO)")
+ENVIE_FOTO = (f"envie a foto da partida")
 JOGADOR_INVALIDO = (f"O nome de um jogador deve possuir"
                     f"entre {NAME_MIN} e {NAME_MAX} caracteres")
 WELCOME = (f"Seja bem-vindo ao CriadorPlacarBot! Este bot tem como "
@@ -197,6 +204,9 @@ def validate_score_torneio(text):
         #tie_tenista2 = int(sets[2][index_half:])
         
 
+def validate_yesNo(text):
+    upperText = text.upper()
+    return upperText == "SIM" or upperText == "NÃO"
 
 # @bot.message_handler(commands=['help', 'start'])
 @bot.message_handler(func=lambda message: True, commands=['help', 'start'])
@@ -274,7 +284,27 @@ def draw_text(field, text, draw):
     draw.text((x, y), text, font=font, fill=(0, 0, 0), anchor="mm")
 
 
-def create_image(chat_id):
+def merge_photos(img, user_photo):
+    img_byte_arr = io.BytesIO()
+    
+    img_user = Image.open(io.BytesIO(user_photo))
+
+    # Redimensiona a imagem do placar para ter a mesma largura da imagem do usuário
+    width, _ = img_user.size
+    img = img.resize((width, img.height))
+
+    # Junta as imagens
+    new_image = Image.new('RGB', (width, img_user.height + img_user.height))
+    new_image.paste(img, (0, 0))
+    new_image.paste(img_user, (0, img.height))
+
+    # Save the image
+    new_image.save(img_byte_arr, format='PNG')
+
+    return img_byte_arr
+
+
+def create_image(chat_id, user_photo=None):
     img = Image.open("ranking.jpg")
     draw = ImageDraw.Draw(img)
 
@@ -318,9 +348,13 @@ def create_image(chat_id):
     text = user_info[chat_id]["local"].upper()
     draw_text(simplesDimensions["LOCAL"], text, draw)
 
-    # Save the image
-    img_byte_arr = io.BytesIO()
-    img.save(img_byte_arr, format='PNG')
+    img_byte_arr = None
+    if user_photo is not None:
+        img_byte_arr = merge_photos(img, user_photo)
+    else:
+        img_byte_arr = io.BytesIO()
+        img.save(img_byte_arr, format='PNG')        
+
     img_byte_arr.seek(0)
     bot.send_photo(chat_id=chat_id, photo=img_byte_arr)
 
@@ -330,7 +364,7 @@ def create_image(chat_id):
     )
 
 
-def create_image_duplas(chat_id):
+def create_image_duplas(chat_id, user_photo=None):
     img = Image.open("ranking-duplas.jpg")
     draw = ImageDraw.Draw(img)
 
@@ -384,9 +418,13 @@ def create_image_duplas(chat_id):
     text = user_info[chat_id]["local"].upper()
     draw_text(duplasDimensions["LOCAL"], text, draw)
 
-    # Save the image
-    img_byte_arr = io.BytesIO()
-    img.save(img_byte_arr, format='PNG')
+    img_byte_arr = None
+    if user_photo is not None:
+        img_byte_arr = merge_photos(img, user_photo)
+    else:
+        img_byte_arr = io.BytesIO()
+        img.save(img_byte_arr, format='PNG')        
+
     img_byte_arr.seek(0)
     bot.send_photo(chat_id=chat_id, photo=img_byte_arr)
 
@@ -395,7 +433,7 @@ def create_image_duplas(chat_id):
          f"user_info={user_info[chat_id]}")
     )
 
-def create_image_torneio(chat_id):
+def create_image_torneio(chat_id, user_photo=None):
     img = Image.open("torneio-simples.jpg")
     draw = ImageDraw.Draw(img)
 
@@ -448,9 +486,13 @@ def create_image_torneio(chat_id):
     text = user_info[chat_id]["local"].upper()
     draw_text(torneioSimplesDimensions["LOCAL"], text, draw)
 
-    # Save the image
-    img_byte_arr = io.BytesIO()
-    img.save(img_byte_arr, format='PNG')
+    img_byte_arr = None
+    if user_photo is not None:
+        img_byte_arr = merge_photos(img, user_photo)
+    else:
+        img_byte_arr = io.BytesIO()
+        img.save(img_byte_arr, format='PNG')        
+
     img_byte_arr.seek(0)
     bot.send_photo(chat_id=chat_id, photo=img_byte_arr)
 
@@ -483,6 +525,11 @@ tipoItem1 = types.KeyboardButton('Simples')
 tipoItem2 = types.KeyboardButton('Duplas')
 tipoItem3 = types.KeyboardButton('Torneio Simples')
 tipoMarkup.add(tipoItem1, tipoItem2, tipoItem3)
+
+yesNoMarkup = types.ReplyKeyboardMarkup(row_width=2)
+yesNo1 = types.KeyboardButton('Sim')
+yesNo2 = types.KeyboardButton('Não')
+yesNoMarkup.add(yesNo1, yesNo2)
 
 defaultMarkup = types.ReplyKeyboardRemove(selective=False)
 
@@ -677,6 +724,15 @@ stateHandlerTorneio = [
 ]
 
 
+def getStateHandler(chat_id):
+    if "tipo" in user_info[chat_id] and user_info[chat_id]["tipo"].upper() == "DUPLAS":
+        return stateHandlerDuplas
+    elif "tipo" in user_info[chat_id] and user_info[chat_id]["tipo"].upper() == "TORNEIO SIMPLES":
+        return stateHandlerTorneio
+    else:
+        return stateHandler
+
+
 @bot.message_handler(commands=['placar'])
 def placar(message):
     user_id = message.from_user.id
@@ -711,6 +767,68 @@ def placar(message):
     )
 
     # bot.register_next_step_handler(message, process_player1)
+
+@bot.message_handler(content_types=['photo'])
+def handle_photo(message):
+
+    user_id = message.from_user.id
+    current_time = time.time()
+    if user_id in last_message_time:
+        time_since_last_message = current_time - last_message_time[user_id]
+        if time_since_last_message < 1.0 / MAX_MESSAGES_PER_SECOND:
+            bot.send_message(
+                message.chat.id,
+                (f"Muitas mensagens dentro de um curto período de tempo."
+                 f" Capacidade de processamento apenas de"
+                 f" {MAX_MESSAGES_PER_SECOND} mensagens por segundo")
+            )
+            return
+    last_message_time[user_id] = current_time
+
+    chat_id = message.chat.id
+    
+    if not state or chat_id not in state or state[chat_id] < -1:
+        bot.send_message(chat_id=chat_id, text=WELCOME)
+        return
+
+    currentState = state[chat_id]
+
+    if currentState < STATE_FINAL:
+        state_handler = getStateHandler(chat_id)
+        bot.send_message(
+            chat_id=chat_id,
+            text=state_handler[currentState][0],
+            reply_markup=state_handler[currentState][4]
+        )
+    elif currentState == STATE_FINAL:
+        bot.send_message(
+            chat_id=chat_id,
+            text=DESEJA_ENVIAR_FOTO,
+            reply_markup=yesNoMarkup
+        )
+    else:
+        photo_id = message.photo[-1].file_id
+        photo_info = bot.get_file(photo_id)
+        photo_file = bot.download_file(photo_info.file_path)
+
+        bot.send_message(
+            chat_id=chat_id,
+            text=GERANDO_IMAGEM,
+            reply_markup=defaultMarkup
+        )
+        if user_info[chat_id]["tipo"].upper() == "DUPLAS":
+            create_image_duplas(chat_id, photo_file)
+        elif user_info[chat_id]["tipo"].upper() == "TORNEIO SIMPLES":
+            create_image_torneio(chat_id, photo_file)
+        else:
+            create_image(chat_id, photo_file)
+
+        logger.info(
+            (f"state len: {len(state)}\n"
+            f"user_info len: {len(user_info)}")
+        )
+        
+        state.pop(chat_id)
 
 
 # @bot.message_handler(content_types=['text'])
@@ -757,11 +875,7 @@ def process_inputs(message):
             )
             return
 
-    state_handler = stateHandler
-    if "tipo" in user_info[chat_id] and user_info[chat_id]["tipo"].upper() == "DUPLAS":
-        state_handler = stateHandlerDuplas
-    elif "tipo" in user_info[chat_id] and user_info[chat_id]["tipo"].upper() == "TORNEIO SIMPLES":
-        state_handler = stateHandlerTorneio
+    state_handler = getStateHandler(chat_id)
     """if currentState == len(state_handler):
         bot.send_message(
             chat_id=chat_id,
@@ -771,20 +885,60 @@ def process_inputs(message):
         return """
 
     # print(f"start msg state={currentState}")
+
+    if currentState == STATE_FINAL:
+        if validate_yesNo(text):
+            if text.upper() == "NÃO":
+                bot.send_message(
+                    chat_id=chat_id,
+                    text=GERANDO_IMAGEM,
+                    reply_markup=defaultMarkup
+                )
+                if user_info[chat_id]["tipo"].upper() == "DUPLAS":
+                    create_image_duplas(chat_id)
+                elif user_info[chat_id]["tipo"].upper() == "TORNEIO SIMPLES":
+                    create_image_torneio(chat_id)
+                else:
+                    create_image(chat_id)
+
+                logger.info(
+                    (f"state len: {len(state)}\n"
+                    f"user_info len: {len(user_info)}")
+                )
+                
+                state.pop(chat_id)
+                return
+            else:
+                bot.send_message(
+                    chat_id=chat_id,
+                    text=ENVIE_FOTO,
+                    reply_markup=defaultMarkup
+                )
+                state[chat_id] = WAITING_PHOTO_STATE
+                return
+
+        else:
+            bot.send_message(
+                chat_id=chat_id,
+                text=DESEJA_ENVIAR_FOTO,
+                reply_markup=yesNoMarkup
+            )
+            return
+    elif currentState == WAITING_PHOTO_STATE:
+        bot.send_message(
+            chat_id=chat_id,
+            text=AGUARDANDO_FOTO,
+            reply_markup=defaultMarkup
+        )
+        return
+
     if (state_handler[currentState][2](text)):
         # print("inserting")
         # print(f"key {state_handler[currentState][3]}, text {text}")
         user_info[chat_id][state_handler[currentState][3]] = text
         # print(user_info[chat_id])
 
-        if "tipo" in user_info[chat_id]:
-            if user_info[chat_id]["tipo"].upper() == "DUPLAS":
-                state_handler = stateHandlerDuplas
-            elif user_info[chat_id]["tipo"].upper() == "TORNEIO SIMPLES":
-                state_handler = stateHandlerTorneio
-        else:
-            state_handler = stateHandler
-
+        state_handler = getStateHandler(chat_id)
         state[chat_id] += 1
 
         if currentState + 1 < len(state_handler):
@@ -794,26 +948,12 @@ def process_inputs(message):
                 reply_markup=state_handler[currentState + 1][4]
             )
         else:
+            state[chat_id] = STATE_FINAL
             bot.send_message(
                 chat_id=chat_id,
-                text="criando a imagem, pode demorar alguns segundos ..."
+                text=DESEJA_ENVIAR_FOTO,
+                reply_markup=yesNoMarkup
             )
-            if user_info[chat_id]["tipo"].upper() == "DUPLAS":
-                create_image_duplas(chat_id)
-            elif user_info[chat_id]["tipo"].upper() == "TORNEIO SIMPLES":
-                create_image_torneio(chat_id)
-            else:
-                create_image(chat_id)
-
-            logger.info(
-                (f"state len: {len(state)}\n"
-                 f"user_info len: {len(user_info)}")
-            )
-            
-            #state[chat_id] = -1
-            state.pop(chat_id)
-            # bot.send_message(chat_id=chat_id, text="acabou")
-
     else:
         bot.send_message(
             chat_id=chat_id,
