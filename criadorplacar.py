@@ -34,8 +34,7 @@ AGUARDANDO_FOTO = "aguardando a foto da partida"
 GERANDO_IMAGEM = "criando a imagem, pode demorar alguns segundos ..."
 TIPO_INVALIDO = "O tipo de jogo deve ser 'simples', 'duplas' ou 'torneio simples'"
 DESEJA_ENVIAR_FOTO = ("deseja enviar a foto da partida? (sim / não)\n"
-                      "A imagem com o placar será juntada com a foto enviada "
-                      "(melhor visualiado com foto enviada no modo RETRATO)")
+                      "A imagem com o placar será juntada com a foto enviada")
 ENVIE_FOTO = (f"envie a foto da partida")
 JOGADOR_INVALIDO = (f"O nome de um jogador deve possuir"
                     f"entre {NAME_MIN} e {NAME_MAX} caracteres")
