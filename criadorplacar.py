@@ -293,7 +293,7 @@ def merge_photos(img, user_photo):
     img = img.resize((width, img.height))
 
     # Junta as imagens
-    new_image = Image.new('RGB', (width, img_user.height + img_user.height))
+    new_image = Image.new('RGB', (width, img.height + img_user.height))
     new_image.paste(img, (0, 0))
     new_image.paste(img_user, (0, img.height))
 
