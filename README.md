@@ -1,37 +1,36 @@
 # Telegram CriadorPlacarBot
 
+Bot de telegram (@CriadorPlacarBot), cujo objetivo é gerar imagens com os dados de um jogo válido pelo ranking da OPEN. Ele foi desenvolvido de forma independente e não possui vínculo oficial com o ranking. O objetivo é apenas facilitar a geração da imagem.
+
+Clique [aqui](http://t.me/CriadorPlacarBot) e acesse o bot!
+
 ## Configurando o ambiente
 
-1. 
+1. Clone este repositório 
 ```
 git clone https://github.com/lbpinheiro/criadorplacarbot.git
 ```
-2. Usand  o `.env.example` como base, crie o seu próprio `.env` e insira o TOKEN do bot
-3.
+2. Usando `.env.example` como base, crie o seu próprio `.env` e insira o TOKEN do bot
+```
+cp .env.example .env
+```
+3. Instale os requesitos
 ```
 pip install -r requirements.txt
 ```
-4.
+4. Inicie o servidor
 ```
-python -u criadorplacarbot.py
+python -u main.py
 ```
 
-### Configurando o server
-
-- Lembrar que dependendo da máquina tem que usar um `OFFSET` diferente! No momento
-```
-# máquina local
-OFFSET = 8
-
-# server
-OFFSET = 1
-```
+## Configurando o server
 
 - Para iniciar o bot fora do service unit
 ```
-nohup python3 -u criadorplacar.py &
+nohup python3 -u main.py &
 ```
 
+### Usando Service Unit
 - Crie o service unit em `/etc/systemd/system`
 ```
 [Unit]
@@ -48,5 +47,12 @@ WantedBy=multi-user.target
 ```
 #!/bin/bash
 cd /<LOCAL ONDE ESTÁ O BOT>/
-exec python3 criadorplacar.py
+exec python3 main.py
 ```
+- A depender da fonte e da máquina utilizada como servidor, talvez seja necessário ajustes no `OFFSET` dentro do `.env`
+
+## TODO
+- Preenchimento da boleta de torneio de duplas
+
+## Autor
+[lbpinheiro](https://github.com/lbpinheiro)
