@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-VERSION = "0.7"
+VERSION = "0.8"
 LOG_FOLDER = "log"
 LOG_FILE = "criadorplacarbot.log"
 MAX_MESSAGES_PER_SECOND = 4
@@ -24,15 +24,17 @@ DESEJA_ENVIAR_FOTO = ("deseja enviar a foto da partida? (sim / não)\n"
 ENVIE_FOTO = "envie a foto da partida"
 JOGADOR_INVALIDO = (f"O nome de um jogador deve possuir"
                     f"entre {NAME_MIN} e {NAME_MAX} caracteres")
+LINK_TEXT = "neste link, no github"
+LINK_URL = "https://github.com/lbpinheiro/criadorplacarbot"
 WELCOME = (f"Seja bem-vindo ao CriadorPlacarBot! Este bot tem como "
            f"objetivo gerar imagens com os dados de um jogo válido pelo "
            f"ranking da OPEN. Ele foi desenvolvido de forma independente e "
            f"não possui vínculo oficial com o ranking. O objetivo é apenas "
            f"facilitar a geração da imagem.\n\n"
-           f"Por enquanto, não há verificação de dados, como locais ou nomes "
-           f"de jogadores. É possível usar letras maiúsculas ou minúsculas em "
-           f"todos os campos (e em alguns casos, até botões de respostas "
-           f"rápidas).\n\n"
+           f"O código do bot é aberto e está disponível "
+           f"<a href='{LINK_URL}'>{LINK_TEXT}</a>. "
+           f"Qualquer pessoa pode contribuir, propor melhorias e fazer parte "
+           f"do crescimento deste projeto.\n\n"
            f"Para iniciar, use o comando /placar. Para interromper o processo "
            f"atual, use o comando /cancelar.\n\n"
            f"Para ver esta mensagem de ajuda novamente, basta usar o comando "

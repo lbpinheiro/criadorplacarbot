@@ -45,7 +45,7 @@ def validate_score_torneio(text):
             tenista1_sets_vencidos += 1
         elif sets[i] not in {"06", "16", "26", "36", "46", "57", "67"}:
             return False
-    
+
     if tenista1_sets_vencidos == 2:
         return sets_size == 2
     elif tenista1_sets_vencidos == 0:

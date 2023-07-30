@@ -32,7 +32,12 @@ bot = telebot.TeleBot(os.environ.get("BOT_KEY"))
 @bot.message_handler(func=lambda message: True, commands=['help', 'start'])
 def send_welcome(message):
     if not functions.max_messages_reached(message, bot, last_message_time):
-        bot.reply_to(message, constants.WELCOME)
+        bot.send_message(
+            message.chat.id,
+            constants.WELCOME,
+            parse_mode="HTML",
+            disable_web_page_preview=True
+        )
 
 
 @bot.message_handler(commands=['cancelar'])
@@ -85,7 +90,12 @@ def handle_photo(message):
     chat_id = message.chat.id
 
     if not state or chat_id not in state or state[chat_id] < -1:
-        bot.send_message(chat_id=chat_id, text=constants.WELCOME)
+        bot.send_message(
+            message.chat.id,
+            constants.WELCOME,
+            parse_mode="HTML",
+            disable_web_page_preview=True
+        )
         return
 
     currentState = state[chat_id]
@@ -139,7 +149,12 @@ def process_inputs(message):
     text = message.text.strip()
 
     if not state or chat_id not in state or state[chat_id] < -1:
-        bot.send_message(chat_id=chat_id, text=constants.WELCOME)
+        bot.send_message(
+            message.chat.id,
+            constants.WELCOME,
+            parse_mode="HTML",
+            disable_web_page_preview=True
+        )
         return
 
     currentState = state[chat_id]
