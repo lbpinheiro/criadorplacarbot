@@ -31,19 +31,22 @@ nohup python3 -u main.py &
 ```
 
 ### Usando Service Unit
-- Crie o service unit em `/etc/systemd/system`
+- Crie o service unit em `/etc/systemd/system`. Abaixo apenas um exemplo de um `criadorplacar.service`
 ```
 [Unit]
 Description=Criador Placar - telegram bot
+After=network.target
 
 [Service]
-ExecStart=/usr/local/bin/telegrambot-start.sh
+WorkingDirectory=/<path>/criadorplacarbot
+ExecStart=/<path>/criadorplacarbot/bin/python /<path>/criadorplacarbot/main.py
 Restart=always
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
 ```
-- Exemplo de script de inicialização
+- No campo `ExecStart`, é possível utilizar um script de inicialização (usando python venv eu prefiro fazer direto pelo service unit, como mostrado acima). Exemplo de script de inicialização
 ```
 #!/bin/bash
 cd /<LOCAL ONDE ESTÁ O BOT>/
