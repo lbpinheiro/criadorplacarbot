@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-VERSION = "0.8"
+VERSION = "0.9"
 LOG_FOLDER = "log"
 LOG_FILE = "criadorplacarbot.log"
 MAX_MESSAGES_PER_SECOND = 4
