@@ -225,9 +225,9 @@ def create_image_torneio(chat_id, user_info, bot, user_photo=None):
 
     if len(score) > 2:
         tie2 = int(score[2])
-        tie1 = 10
+        tie1 = 7
 
-        if tie2 > 8:
+        if tie2 > 5:
             tie1 = tie2 + 2
 
         # tiebreak 1
