@@ -31,28 +31,61 @@ def draw_text(field, text, draw):
 
 
 def merge_photos(img, user_photo):
-    img_byte_arr = io.BytesIO()
-
     img_user = Image.open(io.BytesIO(user_photo))
 
-    # Redimensiona a imagem do placar para ter a mesma
-    # largura da imagem do usuário
+    # Tamanho máximo permitido para a imagem
+    max_width = img.height if img.height > img.width else img.width
+    max_height = img.width if img.width < img.height else img.height
 
-    # TODO seria possível aqui forçar um achatamento da
-    # imagem do usuário para deixar nos moldes da boleta
-    width, _ = img_user.size
-    img = img.resize((width, img.height))
+    # Redimensionar a imagem do usuário para se ajustar às dimensões máximas permitidas
+    if img_user.width > img_user.height:  # Imagem do usuário na horizontal
+        if img_user.width > max_height:
+            img_user.thumbnail((max_height, max_height), Image.ANTIALIAS)
+    else:  # Imagem do usuário na vertical
+        if img_user.height > max_width:
+            img_user.thumbnail((max_width, max_width), Image.ANTIALIAS)
 
-    # Junta as imagens
-    new_image = Image.new('RGB', (width, img.height + img_user.height))
-    new_image.paste(img, (0, 0))
-    new_image.paste(img_user, (0, img.height))
+    # Verificar as dimensões das imagens
+    width_placar, height_placar = img.size
+    width_user, height_user = img_user.size
 
-    # Save the image
+    # Verificar se a altura da imagem do usuário é maior que a largura
+    if img_user.height > img_user.width:
+        # Redimensionar a imagem do usuário para a altura máxima do placar
+        img_user.thumbnail((img.width, img.height), Image.ANTIALIAS)
+
+    # Verificar as dimensões das imagens
+    width_placar, height_placar = img.size
+    width_user, height_user = img_user.size
+
+    # Verificar se a altura da imagem do usuário é maior que a largura
+    if height_user > width_user:
+        # Criar uma nova imagem com as dimensões combinadas
+        new_width = width_placar + width_user
+        new_height = max(height_placar, height_user)
+        new_image = Image.new('RGB', (new_width, new_height))
+
+        # Colar a imagem do placar no lado esquerdo
+        new_image.paste(img, (0, 0))
+
+        # Colar a imagem do usuário no lado direito
+        new_image.paste(img_user, (width_placar, 0))
+    else:
+        # Criar uma nova imagem com as dimensões combinadas
+        new_width = max(width_placar, width_user)
+        new_height = height_placar + height_user
+        new_image = Image.new('RGB', (new_width, new_height))
+
+        # Colar a imagem do placar acima da imagem do usuário
+        new_image.paste(img, ((new_width - width_placar) // 2, 0))
+        new_image.paste(img_user, ((new_width - width_user) // 2, height_placar))
+
+    # Salvar a nova imagem
+    img_byte_arr = io.BytesIO()
     new_image.save(img_byte_arr, format='PNG')
+    img_byte_arr.seek(0)
 
     return img_byte_arr
-
 
 def create_image(chat_id, user_info, bot, user_photo=None):
     img = Image.open("ranking.jpg")
