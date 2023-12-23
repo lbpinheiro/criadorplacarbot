@@ -1,6 +1,7 @@
 import os
 from telebot import types
 from dotenv import load_dotenv
+from modules import importCsv
 
 load_dotenv()
 
@@ -63,8 +64,8 @@ yesNoMarkup.add(yesNo1, yesNo2)
 
 defaultMarkup = types.ReplyKeyboardRemove(selective=False)
 
-locais_jogos = ["Local A", "Local B", "Local C", "Local D"]
 
+locais_jogos = importCsv.ler_locais_csv_online('https://raw.githubusercontent.com/zani19/criadorplacarbot/main/locais/Locais%20dos%20Jogos%20-%20Nomes%20Padr%C3%A3o%20031223.csv')
 # Criar o teclado com os locais pré-cadastrados
 localMarkup = types.ReplyKeyboardMarkup(row_width=1)
 for local in locais_jogos:
