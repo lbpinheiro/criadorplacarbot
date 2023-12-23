@@ -51,7 +51,7 @@ stateHandler = [
         "Local inválido",
         functions.validate_local,
         "local",
-        constants.defaultMarkup
+        constants.localMarkup
     )
 ]
 
@@ -131,7 +131,7 @@ stateHandlerDuplas = [
         "Local inválido",
         functions.validate_local,
         "local",
-        constants.defaultMarkup
+        constants.localMarkup
     )
 ]
 
@@ -187,7 +187,7 @@ stateHandlerTorneio = [
         "Local inválido",
         functions.validate_local,
         "local",
-        constants.defaultMarkup
+        constants.localMarkup
     )
 ]
 

@@ -62,3 +62,12 @@ yesNo2 = types.KeyboardButton('Não')
 yesNoMarkup.add(yesNo1, yesNo2)
 
 defaultMarkup = types.ReplyKeyboardRemove(selective=False)
+
+locais_jogos = ["Local A", "Local B", "Local C", "Local D"]
+
+# Criar o teclado com os locais pré-cadastrados
+localMarkup = types.ReplyKeyboardMarkup(row_width=1)
+for local in locais_jogos:
+    local_button = types.KeyboardButton(local)
+    localMarkup.add(local_button)
+
