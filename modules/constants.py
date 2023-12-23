@@ -64,8 +64,7 @@ yesNoMarkup.add(yesNo1, yesNo2)
 
 defaultMarkup = types.ReplyKeyboardRemove(selective=False)
 
-
-locais_jogos = importCsv.ler_locais_csv_online('https://raw.githubusercontent.com/zani19/criadorplacarbot/main/locais/Locais%20dos%20Jogos%20-%20Nomes%20Padr%C3%A3o%20031223.csv')
+locais_jogos = importCsv.ler_locais_csv_online(importCsv.url_csv)
 # Criar o teclado com os locais pré-cadastrados
 localMarkup = types.ReplyKeyboardMarkup(row_width=1)
 for local in locais_jogos:
