@@ -15,6 +15,13 @@ NAME_MAX = 80
 STATE_FINAL = 99
 WAITING_PHOTO_STATE = 100
 OFFSET = int(os.environ.get("OFFSET", "1"))  # depende da fonte
+REPO = os.environ.get("REPO", "lbpinheiro")
+FILE_CSV = 'locais.csv'
+URL_CSV = (
+    'https://raw.githubusercontent.com/'
+    '{REPO}/criadorplacarbot/main/locais/{FILE_CSV}'
+)
+
 
 AGUARDANDO_FOTO = "aguardando a foto da partida"
 GERANDO_IMAGEM = "criando a imagem, pode demorar alguns segundos ..."
@@ -64,10 +71,9 @@ yesNoMarkup.add(yesNo1, yesNo2)
 
 defaultMarkup = types.ReplyKeyboardRemove(selective=False)
 
-locais_jogos = importCsv.ler_locais_csv_online(importCsv.url_csv)
+locais_jogos = importCsv.ler_locais_csv_online(URL_CSV)
 # Criar o teclado com os locais pré-cadastrados
 localMarkup = types.ReplyKeyboardMarkup(row_width=1)
 for local in locais_jogos:
     local_button = types.KeyboardButton(local)
     localMarkup.add(local_button)
-

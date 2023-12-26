@@ -36,8 +36,6 @@ def merge_photos(img, user_photo):
     # Tamanho máximo permitido para a imagem
     max_width = img.height if img.height > img.width else img.width
     max_height = img.width if img.width < img.height else img.height
-
-    # Redimensionar a imagem do usuário para se ajustar às dimensões máximas permitidas
     if img_user.width > img_user.height:  # Imagem do usuário na horizontal
         if img_user.width > max_height:
             img_user.thumbnail((max_height, max_height), Image.ANTIALIAS)
@@ -78,7 +76,8 @@ def merge_photos(img, user_photo):
 
         # Colar a imagem do placar acima da imagem do usuário
         new_image.paste(img, ((new_width - width_placar) // 2, 0))
-        new_image.paste(img_user, ((new_width - width_user) // 2, height_placar))
+        new_image.paste(img_user,
+                        ((new_width - width_user) // 2, height_placar))
 
     # Salvar a nova imagem
     img_byte_arr = io.BytesIO()
@@ -86,6 +85,7 @@ def merge_photos(img, user_photo):
     img_byte_arr.seek(0)
 
     return img_byte_arr
+
 
 def create_image(chat_id, user_info, bot, user_photo=None):
     img = Image.open("ranking.jpg")
