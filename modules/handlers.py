@@ -48,7 +48,7 @@ stateHandler = [
     ),
     (
         "Insira o nome do local onde ocorreu o jogo",
-        "Local inválido",
+        constants.LOCAL_INVALIDO,
         functions.validate_local,
         "local",
         constants.localMarkup
@@ -128,7 +128,7 @@ stateHandlerDuplas = [
     ),
     (
         "Insira o nome do local onde ocorreu o jogo",
-        "Local inválido",
+        constants.LOCAL_INVALIDO,
         functions.validate_local,
         "local",
         constants.localMarkup
@@ -184,7 +184,7 @@ stateHandlerTorneio = [
     ),
     (
         "Insira o nome do local onde ocorreu o jogo",
-        "Local inválido",
+        constants.LOCAL_INVALIDO,
         functions.validate_local,
         "local",
         constants.localMarkup

@@ -17,10 +17,8 @@ WAITING_PHOTO_STATE = 100
 OFFSET = int(os.environ.get("OFFSET", "1"))  # depende da fonte
 REPO = os.environ.get("REPO", "lbpinheiro")
 FILE_CSV = 'locais.csv'
-URL_CSV = (
-    'https://raw.githubusercontent.com/'
-    '{REPO}/criadorplacarbot/main/locais/{FILE_CSV}'
-)
+URL_CSV = (f'https://raw.githubusercontent.com/'
+           f'{REPO}/criadorplacarbot/main/locais/{FILE_CSV}')
 
 
 AGUARDANDO_FOTO = "aguardando a foto da partida"
@@ -32,6 +30,10 @@ DESEJA_ENVIAR_FOTO = ("deseja enviar a foto da partida? (sim / não)\n"
 ENVIE_FOTO = "envie a foto da partida"
 JOGADOR_INVALIDO = (f"O nome de um jogador deve possuir"
                     f"entre {NAME_MIN} e {NAME_MAX} caracteres")
+URL_LOCAIS_VALIDOS = (f"https://drive.google.com/file/d/"
+                      f"1xFKF3X2ojEqXBRdp3gem6RRosiCcKmWB/view")
+LOCAL_INVALIDO = (f"Local inválido. Verifique a lista de locais "
+                  f"válidos <a href='{URL_LOCAIS_VALIDOS}'>aqui</a>")
 LINK_TEXT = "neste link, no github"
 LINK_URL = "https://github.com/lbpinheiro/criadorplacarbot"
 WELCOME = (f"Seja bem-vindo ao CriadorPlacarBot! Este bot tem como "
@@ -72,8 +74,9 @@ yesNoMarkup.add(yesNo1, yesNo2)
 defaultMarkup = types.ReplyKeyboardRemove(selective=False)
 
 locais_jogos = importCsv.ler_locais_csv_online(URL_CSV)
+
 # Criar o teclado com os locais pré-cadastrados
 localMarkup = types.ReplyKeyboardMarkup(row_width=1)
 for local in locais_jogos:
-    local_button = types.KeyboardButton(local)
+    local_button = types.KeyboardButton(local[0])
     localMarkup.add(local_button)

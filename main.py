@@ -158,13 +158,22 @@ def process_inputs(message):
         return
 
     currentState = state[chat_id]
-
+    
     if chat_id not in user_info:
         user_info[chat_id] = {}
 
     if currentState == -1:
         if (handlers.initialHandler[2](text)):
             user_info[chat_id][handlers.initialHandler[3]] = text
+            state_handler = handlers.getStateHandler(chat_id, user_info)
+            state[chat_id] = 0
+            bot.send_message(
+                chat_id=chat_id,
+                text=state_handler[0][0],
+                reply_markup=state_handler[0][4]
+            )
+            return
+            #currentState = 0
         else:
             bot.send_message(
                 chat_id=chat_id,
@@ -245,7 +254,9 @@ def process_inputs(message):
         bot.send_message(
             chat_id=chat_id,
             text=state_handler[currentState][1],
-            reply_markup=state_handler[currentState][4]
+            reply_markup=state_handler[currentState][4],
+            parse_mode="HTML",
+            disable_web_page_preview=True
         )
 
 
