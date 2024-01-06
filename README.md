@@ -73,7 +73,7 @@ exec python3 main.py
 
 ## Contribuições
 
-Antes de enviar uma PULL REQUEST, por favor, certifique-se de rodar o [fluke8](https://flake8.pycqa.org/en/latest/) no novo código para garantir a conformidade com as diretrizes de estilo e boas práticas do projeto.
+Antes de enviar uma PULL REQUEST, por favor, certifique-se de rodar o [flake8](https://flake8.pycqa.org/en/latest/) no novo código para garantir a conformidade com as diretrizes de estilo e boas práticas do projeto.
 
 Agradeço seu comprometimento com a qualidade do código e suas contribuições para aprimorar o projeto!
 

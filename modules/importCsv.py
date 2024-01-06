@@ -1,13 +1,13 @@
 import requests
 import csv
 from io import StringIO
-from telebot import types
-from modules import constants
+
 
 # utilizada apenas para testes locais
 def ler_locais_csv_local(caminho_arquivo):
     try:
-        with open(caminho_arquivo, newline='', encoding='utf-8') as arquivo_csv:
+        with open(caminho_arquivo, newline='',
+                  encoding='utf-8') as arquivo_csv:
             leitor = csv.DictReader(arquivo_csv, delimiter=';')
             locais = [[row['LOCAL'], row['LOCAL2']] for row in leitor]
             return locais
@@ -21,7 +21,7 @@ def ler_locais_csv_local(caminho_arquivo):
 
 def ler_locais_csv_online(url):
     response = requests.get(url)
-    
+
     if response.status_code == 200:
         content = response.content.decode('utf-8')
         csvfile = StringIO(content)

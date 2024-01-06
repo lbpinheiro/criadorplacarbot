@@ -158,7 +158,7 @@ def process_inputs(message):
         return
 
     currentState = state[chat_id]
-    
+
     if chat_id not in user_info:
         user_info[chat_id] = {}
 
@@ -173,7 +173,7 @@ def process_inputs(message):
                 reply_markup=state_handler[0][4]
             )
             return
-            #currentState = 0
+
         else:
             bot.send_message(
                 chat_id=chat_id,

@@ -1,21 +1,7 @@
 import time
 import re
 from modules import constants
-from modules import importCsv
 
-#if not constants.locais_jogos:
-    # Chama a função para inicializar locais_jogos
-    #constants.locais_jogos = importCsv.ler_locais_csv_online(constants.URL_CSV)
-# def remover_acentos_preservar_cedilha(texto):
-    # Mapeamento personalizado para preservar o caractere 'ç'
- #   mapa_personalizado = {
- #       'c': 'ç'
-  #  }
-
-    # Aplica unidecode, mas preserva o 'ç'
-   # texto_sem_acentos = ''.join(map(lambda char: mapa_personalizado.get(char, unidecode(char)), texto))
-
-    #return texto_sem_acentos
 
 def validate_tipo(text):
     s = text.upper()
@@ -28,7 +14,7 @@ def validate_name(text):
 
 def validate_local(text):
     text_upper = text.upper()
-    
+
     for local in constants.locais_jogos:
         if text_upper == local[0] or text_upper == local[1]:
             return True

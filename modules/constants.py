@@ -30,8 +30,8 @@ DESEJA_ENVIAR_FOTO = ("deseja enviar a foto da partida? (sim / não)\n"
 ENVIE_FOTO = "envie a foto da partida"
 JOGADOR_INVALIDO = (f"O nome de um jogador deve possuir"
                     f"entre {NAME_MIN} e {NAME_MAX} caracteres")
-URL_LOCAIS_VALIDOS = (f"https://drive.google.com/file/d/"
-                      f"1xFKF3X2ojEqXBRdp3gem6RRosiCcKmWB/view")
+URL_LOCAIS_VALIDOS = ("https://drive.google.com/file/d/"
+                      "1xFKF3X2ojEqXBRdp3gem6RRosiCcKmWB/view")
 LOCAL_INVALIDO = (f"Local inválido. Verifique a lista de locais "
                   f"válidos <a href='{URL_LOCAIS_VALIDOS}'>aqui</a>")
 LINK_TEXT = "neste link, no github"
