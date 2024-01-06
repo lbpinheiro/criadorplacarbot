@@ -6,19 +6,26 @@ Clique [aqui](http://t.me/CriadorPlacarBot) e acesse o bot!
 
 ## Configurando o ambiente
 
-1. Clone este repositório 
+1. Clone este repositório
+
 ```
 git clone https://github.com/lbpinheiro/criadorplacarbot.git
 ```
+
 2. Usando `.env.example` como base, crie o seu próprio `.env` e insira o TOKEN do bot
+
 ```
 cp .env.example .env
 ```
+
 3. Instale os requesitos
+
 ```
 pip install -r requirements.txt
 ```
+
 4. Inicie o servidor
+
 ```
 python -u main.py
 ```
@@ -26,12 +33,15 @@ python -u main.py
 ## Configurando o server
 
 - Para iniciar o bot fora do service unit
+
 ```
 nohup python3 -u main.py &
 ```
 
 ### Usando Service Unit
+
 - Crie o service unit em `/etc/systemd/system`. Abaixo apenas um exemplo de um `criadorplacar.service`
+
 ```
 [Unit]
 Description=Criador Placar - telegram bot
@@ -46,16 +56,27 @@ RestartSec=5
 [Install]
 WantedBy=multi-user.target
 ```
+
 - No campo `ExecStart`, é possível utilizar um script de inicialização (usando python venv eu prefiro fazer direto pelo service unit, como mostrado acima). Exemplo de script de inicialização
+
 ```
 #!/bin/bash
 cd /<LOCAL ONDE ESTÁ O BOT>/
 exec python3 main.py
 ```
+
 - A depender da fonte e da máquina utilizada como servidor, talvez seja necessário ajustes no `OFFSET` dentro do `.env`
 
 ## TODO
+
 - Preenchimento da boleta de torneio de duplas
 
+## Contribuições
+
+Antes de enviar uma PULL REQUEST, por favor, certifique-se de rodar o [fluke8](https://flake8.pycqa.org/en/latest/) no novo código para garantir a conformidade com as diretrizes de estilo e boas práticas do projeto.
+
+Agradeço seu comprometimento com a qualidade do código e suas contribuições para aprimorar o projeto!
+
 ## Autor
+
 [lbpinheiro](https://github.com/lbpinheiro)
