@@ -5,7 +5,7 @@ from modules import importCsv
 
 load_dotenv()
 
-VERSION = "0.10"
+VERSION = "0.11"
 LOG_FOLDER = "log"
 LOG_FILE = "criadorplacarbot.log"
 MAX_MESSAGES_PER_SECOND = 4
