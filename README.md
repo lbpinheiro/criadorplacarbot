@@ -1,3 +1,11 @@
+# 🚨 ATENÇÃO 🚨
+
+Este repositório não está mais sendo mantido. A partir de agora, não farei mais atualizações, correções ou suporte para o código aqui disponível. 
+
+Sinta-se à vontade para usar o que achar útil. 
+
+
+
 # Telegram CriadorPlacarBot
 
 Bot de telegram (@CriadorPlacarBot), cujo objetivo é gerar imagens com os dados de um jogo válido pelo ranking da OPEN. Ele foi desenvolvido de forma independente e não possui vínculo oficial com o ranking. O objetivo é apenas facilitar a geração da imagem.
@@ -66,10 +74,6 @@ exec python3 main.py
 ```
 
 - A depender da fonte e da máquina utilizada como servidor, talvez seja necessário ajustes no `OFFSET` dentro do `.env`
-
-## TODO
-
-- Preenchimento da boleta de torneio de duplas
 
 ## Contribuições
 
